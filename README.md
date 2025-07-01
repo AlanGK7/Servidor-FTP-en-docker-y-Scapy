@@ -40,7 +40,7 @@ Docker. Además, accederemos a un contenedor basado en esta imagen mediante un s
 utilizamos los siguientes comandos:
 
 ```bash
-sudo docker container ls (para verificar la descarga)
+sudo docker container ls # para verificar la descarga
 sudo docker exec -it servidor /bin/bash # para acceder a la bash del contenedor ”servidor”donde se alojara el servidor 
 ```
 A continuación, procederemos con la configuración del servidor ProFTPD. Antes de iniciar su instalación, es
@@ -162,6 +162,14 @@ RequireValidShell   off
 SystemLog           /var/log/proftpd.log
 ```
 
+Con el servidor ya en funcionamiento, procedemos a añadir un usuario que se utilizará para iniciar sesión a
+través del servicio FTP. Este usuario se crea sin acceso a la terminal del sistema, utilizando el siguiente comando:
+
+```bash
+useradd -m -s /bin/false user && echo ”user:pass”| chpasswd
+```
+> [!TIP]
+> Modificar el campo user y pass según los datos de acceso que idee conveniente
 
 
 
