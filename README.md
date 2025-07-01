@@ -17,5 +17,14 @@ El objetivo principal fue analizar el comportamiento del servicio FTP ante alter
 > Algunos comandos, rutas y configuraciones pueden no funcionar correctamente en **Windows** o **macOS** sin adaptaciones adicionales.
 
 ## ⚙️ Instalción del servidor
+### 1. Crear la red Docker
+Para la instalación del servidor ProFTPD, se creó una red interna dentro del mismo dispositivo. Aunque este
+paso es opcional y no estrictamente necesario, se optó por esta configuración con el fin de trabajar en un entorno
+más controlado y aislado. 
+> [!TIP]
+> Es altamente recomendable exponer el puerto 21 sí no optas por una red Docker.
 
-
+Para ello empezamos creando la red con el siguiente comando:
+```bash
+sudo docker network create redes_net
+```
