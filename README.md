@@ -213,8 +213,8 @@ sudo docker network inspect redes_net
 
 > [!TIP]
 > Desde otra terminal del HOST.
-Resultado:
 
+Resultado:
 ```json
 [
   {
