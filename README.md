@@ -16,8 +16,8 @@ El objetivo principal fue analizar el comportamiento del servicio FTP ante alter
 > Este proyecto ha sido diseñado y probado exclusivamente en sistemas operativos **Linux**, particularmente distribuciones basadas en **Ubuntu/Debian**.  
 > Algunos comandos, rutas y configuraciones pueden no funcionar correctamente en **Windows** o **macOS** sin adaptaciones adicionales.
 
-## ⚙️ Instalción del servidor
-### 1. Crear la red Docker
+## ⚙️ Instalación del servidor
+
 Para la instalación del servidor ProFTPD, se creó una red interna dentro del mismo dispositivo. Aunque este
 paso es opcional y no estrictamente necesario, se optó por esta configuración con el fin de trabajar en un entorno
 más controlado y aislado. 
@@ -72,7 +72,7 @@ la versión 1.3.8 de ProFTPD directamente desde su código fuente oficial median
 wget sudo ftp://ftp.proftpd.org/distrib/source/proftpd-1.3.8.tar.gz && tar -xvzf proftpd-1.3.8.tar.gz && cd
 proftpd-1.3.8
 ```
-Con este conando descarga el ProFTPD, lo descomprime y entra al directorio creado.
+Con este comando descarga el ProFTPD, lo descomprime y entra al directorio creado.
 
 Antes de compilar ProFTPD, se deben establecer ciertas opciones de configuración para ajustar su instalación al
 entorno deseado. Primero, indicamos que los archivos se instalarán con el usuario root y el grupo wheel, utilizando
@@ -171,17 +171,101 @@ useradd -m -s /bin/false user && echo ”user:pass”| chpasswd
 > [!TIP]
 > Modificar el campo user y pass según los datos de acceso que idee conveniente
 
+Para finalizar, verificamos la dirección IP asignada al contenedor que ejecuta el servidor FTP. Esto es necesario para
+que el cliente pueda establecer la conexión correctamente. Utilizamos el siguiente comando desde otra terminal:
 
+```bash
+docker inspect -f ’{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}’ servidor
+```
 
+## ⚙️ Instalación del cliente
+Para el cliente, que utiliza lftp, se crea un nuevo contenedor llamado “cliente” usando la imagen de Ubuntu y
+añadiéndolo a la red “redes_net”. Luego, se procede a instalar lftp dentro del contenedor con el siguiente comando:
 
+> [!TIP]
+> Desde otra terminal.
 
+```bash
+sudo docker run -it –name cliente –network redes_net ubuntu bash
+```
 
+Con este comando se instalan las dependencias necesarias para que `lftp` funcione correctamente. Entre ellas se incluyen:
+Comando: 
+```bash
+apt install lftp -y
+```
 
+- `readline-devel`
+- `zlib-devel`
+- `gnutls-devel` **o** `openssl-devel` *(opcional, para soporte de TLS/SSL)*
+- `expat-devel` *(opcional, para manejo de XML)*
 
+> 📝 **Nota:** Estas dependencias suelen instalarse automáticamente en sistemas Debian/Ubuntu al ejecutar `apt install lftp`.
 
+## Comunicación Cliente-Servidor
 
+Para empezar con la conexion del cliente con el servidor primero deberemos levantar la red local con el siguiente
+comando:
 
+```bash
+sudo docker network inspect redes_net
+```
 
+> [!TIP]
+> Desde otra terminal del HOST.
+Resultado:
+
+```json
+[
+  {
+    "Name": "redes_net",
+    "Id": "c9e4e71b0b40...",
+    "Created": "2025-07-01T20:10:15.217Z",
+    "Scope": "local",
+    "Driver": "bridge",
+    "EnableIPv6": false,
+    "IPAM": {
+      "Driver": "default",
+      "Options": null,
+      "Config": [
+        {
+          "Subnet": "172.18.0.0/16",
+          "Gateway": "172.18.0.1"
+        }
+      ]
+    },
+    "Containers": {
+      "a1b2c3d4e5f6": {
+        "Name": "servidor",
+        "EndpointID": "f0a1b...",
+        "MacAddress": "02:42:ac:12:00:02",
+        "IPv4Address": "172.18.0.2/16",
+        "IPv6Address": ""
+      },
+      "f6e5d4c3b2a1": {
+        "Name": "cliente",
+        "EndpointID": "e1b2c...",
+        "MacAddress": "02:42:ac:12:00:03",
+        "IPv4Address": "172.18.0.3/16",
+        "IPv6Address": ""
+      }
+    },
+    "Options": {},
+    "Labels": {}
+  }
+]
+```
+
+Volvemos a la terminal del servidor y combrobamos que se encuentre disponible para la conexión con el siguiente comando:
+
+```bash
+ps aux | grep proftpd # debera salir un resultado como porftpd: (accepting connections)
+```
+> [!IMPORTANT]
+> Si no se encuetra aceptando conexion ingrese el siguiente comando:
+> ```bash
+> proftpd
+> ``` 
 
 
 
