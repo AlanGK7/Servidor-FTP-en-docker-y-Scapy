@@ -20,10 +20,10 @@ El objetivo principal fue analizar el comportamiento del servicio FTP ante alter
 
 ```plaintext
 ┌──────────────┐         docker network: redes_net        ┌──────────────┐
-│   Cliente    │  <—————————— comunicación FTP ——————————>  │  Servidor    │
-│   (lftp)     │                                         │  (ProFTPD)   │
-└──────────────┘                                         └──────────────┘
-           ⬇                                                ⬇
+│   Cliente    │  <—————————— comunicación FTP ——————————>│  Servidor    │
+│   (lftp)     │                                          │  (ProFTPD)   │
+└──────────────┘                                          └──────────────┘
+           ⬇                                                  ⬇
      Interfaz virtual                                Interfaz virtual
          br-XXX                                           br-XXX   
                ↘                                        ↙
