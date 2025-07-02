@@ -1,6 +1,6 @@
 # Servidor-FTP-en-docker-y-Scapy
 
-# Descripción
+## Descripción
 En conjunto, **lftp** y **ProFTPD** forman una pareja ideal para usuarios técnicos o administradores que buscan eficiencia, seguridad y automatización avanzada en sus sistemas. A diferencia de otras combinaciones, esta se enfoca
 en un rendimiento sólido desde la terminal y una gestión completa del servidor, lo que la convierte en una opción
 preferente en contextos profesionales o de alta demanda técnica.
@@ -16,7 +16,7 @@ El objetivo principal fue analizar el comportamiento del servicio FTP ante alter
 > Este proyecto ha sido diseñado y probado exclusivamente en sistemas operativos **Linux**, particularmente distribuciones basadas en **Ubuntu/Debian**.  
 > Algunos comandos, rutas y configuraciones pueden no funcionar correctamente en **Windows** o **macOS** sin adaptaciones adicionales.
 
-## 📁 Estructura del Proyecto
+### 📁 Estructura del Proyecto
 
 ```plaintext
 ┌──────────────┐         docker network: redes_net        ┌──────────────┐
@@ -35,10 +35,11 @@ El objetivo principal fue analizar el comportamiento del servicio FTP ante alter
 ```
 
 
-## ⚙️ Instalación del servidor
+## ⚙️ Instalación
 
+### 🔧 Instalación del servidor
 Para la instalación del servidor ProFTPD, se creó una red interna dentro del mismo dispositivo. Aunque este
-paso es opcional y no estrictamente necesario, se optó por esta configuración con el fin de trabajar en un entorno
+paso es opcional y no estrictamente necesario, se optó por esta ción con el fin de trabajar en un entorno
 más controlado y aislado. 
 > [!TIP]
 > Es altamente recomendable exponer el puerto 21 sí no optas por una red Docker.
@@ -62,9 +63,10 @@ utilizamos los siguientes comandos:
 sudo docker container ls # para verificar la descarga
 sudo docker exec -it servidor /bin/bash # para acceder a la bash del contenedor ”servidor”donde se alojara el servidor 
 ```
-A continuación, procederemos con la configuración del servidor ProFTPD. Antes de iniciar su instalación, es
+A continuación, procederemos con la ción del servidor ProFTPD. Antes de iniciar su instalación, es
 importante tener en cuenta ciertos requisitos previos, los cuales se pueden consultar en su documentación oficial.
 
+### Requisitos previos
 Para compilar correctamente ProFTPD desde su código fuente, es necesario contar con las siguientes dependencias y condiciones en el sistema:
 - **Compilador C ANSI/ISO C89/C90**, por ejemplo GNU `gcc`
 - **Herramienta de construcción** `make` (GNU make recomendado, aunque la mayoría de las implementaciones funcionan)
@@ -93,7 +95,7 @@ proftpd-1.3.8
 ```
 Con este comando descarga el ProFTPD, lo descomprime y entra al directorio creado.
 
-Antes de compilar ProFTPD, se deben establecer ciertas opciones de configuración para ajustar su instalación al
+Antes de compilar ProFTPD, se deben establecer ciertas opciones de ción para ajustar su instalación al
 entorno deseado. Primero, indicamos que los archivos se instalarán con el usuario root y el grupo wheel, utilizando
 el siguiente comando:
 
@@ -101,7 +103,7 @@ el siguiente comando:
 sudo install_user=root install_group=wheel ./configure
 ```
 
-A continuación, configuramos las opciones del compilador, especificando que se utilizará gcc con las flags -O para
+A continuación, mos las opciones del compilador, especificando que se utilizará gcc con las flags -O para
 optimización y -g para incluir información de depuración:
 
 ```bash
@@ -115,21 +117,21 @@ en lugar del predeterminado /usr/local, lo cual resulta útil en entornos como D
 ./configure –prefix=/usr
 ```
 
-Finalmente, especificamos las rutas para los archivos de configuración y para los archivos variables del servidor, de
+Finalmente, especificamos las rutas para los archivos de ción y para los archivos variables del servidor, de
 modo que ProFTPD respete la jerarquía típica de directorios en sistemas basados en Linux como Ubuntu:
 
 ```bash
 ./configure –sysconfdir=/etc –localstatedir=/var/proftpd
 ```
 
-Una vez finalizada esta configuración, se realiza una prueba manual para verificar el funcionamiento correcto del servidor. Para ello, primero instalamos archivos de prueba con el siguiente comando y vemos como es su naturaleza:
+Una vez finalizada esta ción, se realiza una prueba manual para verificar el funcionamiento correcto del servidor. Para ello, primero instalamos archivos de prueba con el siguiente comando y vemos como es su naturaleza:
 
 ```bash
-sh sample-configurations/PFTEST.install
+sh sample-tions/PFTEST.install
 Sample test Succesfully in /tmp/PFTEST.
 ```
 
-Esto genera una configuración de ejemplo en el directorio /tmp/PFTEST. Luego, ejecutamos ProFTPD en modo
+Esto genera una ción de ejemplo en el directorio /tmp/PFTEST. Luego, ejecutamos ProFTPD en modo
 de prueba mediante:
 
 ```bash
@@ -144,7 +146,7 @@ chmod 600 /tmp/PFTEST/PFTEST.passwd
 ```
 
 Dado que el protocolo FTP utiliza por defecto el puerto 21, es necesario modificar el archivo proftpd.conf para ajustar
-la configuración del servidor. En particular, en la directiva Port, se debe especificar el valor 21, que corresponde al
+la ción del servidor. En particular, en la directiva Port, se debe especificar el valor 21, que corresponde al
 puerto que utilizará el servicio. Este archivo está alojado en:
 
 ```bash
@@ -199,7 +201,7 @@ que el cliente pueda establecer la conexión correctamente. Utilizamos el siguie
 docker inspect -f ’{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}’ servidor
 ```
 
-## ⚙️ Instalación del cliente
+### ⚙️ Instalación del cliente
 Para el cliente, que utiliza lftp, se crea un nuevo contenedor llamado “cliente” usando la imagen de Ubuntu y
 añadiéndolo a la red “redes_net”. Luego, se procede a instalar lftp dentro del contenedor con el siguiente comando:
 
@@ -306,7 +308,7 @@ usuario y la contraseña correspondiente, con un ls o cd para verificar que se e
 > ```
 
 ## Comandos FTP importantes.
-El entorno se encuentra totalmente configurado. Para lo siguiente es importante saber los comandos que se pueden utilizar en la consola dentro del servidor. Entre los comandos FTP más comunes y representativos se encuentran:
+El entorno se encuentra totalmente do. Para lo siguiente es importante saber los comandos que se pueden utilizar en la consola dentro del servidor. Entre los comandos FTP más comunes y representativos se encuentran:
 - `USER`: Envía el nombre de usuario para iniciar sesión.
 - `PASS`: Transmite la contraseña del usuario.
 - `PUT`: Sube un archivo individualmente.
@@ -327,7 +329,7 @@ El entorno se encuentra totalmente configurado. Para lo siguiente es importante 
 - `QUIT`: Finaliza la sesión FTP correctamente.
 
 
-## Utilización de Scapy
+## 🕵️ Utilización de Scapy
 El uso de Scapy sirve para analizar, interceptar, inyectar y modificar tráfico FTP entre un cliente lftp y un servidor proftpd, ambos ejecutándose en contenedores Docker sobre una red virtual personalizada.
 
 tendremos que identificar las iP’s de los contenedores y la interfaz de red del equipo host, esto se debe a que Docker crea una interfaz de red virtual tipo bridge (por ejemplo, br-xxxxxx), la cual conecta internamente a todos los contenedores asociados a una red personalizada. Dicha interfaz actúa como un switch virtual, permitiendo al host observar todo el tráfico que circula entre los contenedores, incluso si estos no exponen puertos al exterior. En contraste, un contenedor individual solo puede ver su propio tráfico:
@@ -340,7 +342,7 @@ ifconfig
 > [!NOTE]
 > Identificar y anotar la interfaz **br-XXXXXX**
 
-### 1- Configuración
+### Configuración
 Para la utilización de Scapy es necesario tener Python instalado en la maquina HOST. Vamos a preparar la máquina para la intercepción de tráfico, inyección y manipulación de paquetes. 
 
 Para instalar Python y Scapy se utiliza el siguiente comando:
