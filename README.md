@@ -223,7 +223,7 @@ apt install lftp -y
 
 > 📝 **Nota:** Estas dependencias suelen instalarse automáticamente en sistemas Debian/Ubuntu al ejecutar `apt install lftp`.
 
-## Comunicación Cliente-Servidor
+## 🔌 Comunicación Cliente-Servidor
 
 Para empezar con la conexion del cliente con el servidor primero deberemos levantar la red local con el siguiente
 comando:
@@ -419,7 +419,7 @@ Campos importantes:
 - `Raw.load.decode`: permite visualizar comandos en texto claro como USER y PASS.
 - `br-XXXX`: Corresponde al puente Docker que conecta los contenedores.
 
-### Inyecciones de Tráfico (Técnicas de Fuzzing)
+### 💉 Inyecciones de Tráfico (Técnicas de Fuzzing)
 Las pruebas fuzz o fuzzing son un método automatizado de pruebas de software que inyecta datos inválidos, malformados o inesperados en un sistema para revelar defectos y vulnerabilidades. Una herramienta de fuzzing inyecta estos datos en el sistema y luego monitorea excepciones como fallos o fugas de información.
 
 Primera inyección: Intento de inicio de sesión con una cadena USER muy grande
@@ -436,7 +436,7 @@ send(IP(dst="ip_servidor")/TCP(sport=RandShort(), dport=21, flags="PA")/Raw(load
 ```
 El servidor responde con un RST cerrando abruptamente la conexión. **INVALIDCMD** simula un comando no válido del protocol, respuesta 500, mensaje "comando no reconocido"
 
-### Modificaciones del tráfico
+### :trollface: Modificaciones del tráfico
 
 Primera modificación: Solo SYN (handshake falso)
 ```python
@@ -456,7 +456,7 @@ send(IP(dst="ip_servidor")/TCP(sport=RandShort(), dport=21, flags="PA")/Raw(load
 ```
 Muchos servidores FTP bloquean el login como root o bien este paquete es enviado sin una sesión válida ni handshake previo, por lo que el servidor responde con un paquete RST.
 
-## Conclusión
+## 📕 Conclusión
 En este proyecto se enseña a instalar el servicio de ProFTPD y LFTP en contenedores, y se explica cómo son las interacciones entre Cliente-Servidor. También se enseña cómo utilizar Scapy, demostrando que puede ser una herramienta poderosa para la inspección, inyección y modificación de tráfico en servicios de red como FTP. Se replicó un entorno controlado y reproducible para estudiar los efectos del tráfico manipulado. Se simula cómo el servidor FTP reacciona ante entradas malformadas, comandos inesperados y sesiones TCP anómalas.
 
 
