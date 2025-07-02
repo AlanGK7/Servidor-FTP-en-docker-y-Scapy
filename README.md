@@ -290,6 +290,8 @@ usuario y la contraseña correspondiente, con un ls o cd para verificar que se e
 El entorno se encuentra totalmente configurado. Para lo siguiente es importante saber los comandos que se pueden utilizar en la consola dentro del servidor. Entre los comandos FTP más comunes y representativos se encuentran:
 - `USER`: Envía el nombre de usuario para iniciar sesión.
 - `PASS`: Transmite la contraseña del usuario.
+- `PUT`: Sube un archivo individualmente.
+- `GET`: Descarga un archivo individualmente desde el servidor.
 - `CWD`: Cambia el directorio de trabajo en el servidor.
 - `PWD`: Muestra el directorio actual en el servidor.
 - `LIST`: Lista el contenido de un directorio.
@@ -304,6 +306,41 @@ El entorno se encuentra totalmente configurado. Para lo siguiente es importante 
 - `SYST`: Muestra información del sistema del servidor.
 - `FEAT`: Lista las funciones disponibles en el servidor.
 - `QUIT`: Finaliza la sesión FTP correctamente.
+
+
+## Utilización de Scapy
+El uso de Scapy sirve para analizar, interceptar, inyectar y modificar tráfico FTP entre un cliente lftp y un servidor proftpd, ambos ejecutándose en contenedores Docker sobre una red virtual personalizada.
+
+tendremos que identificar las iP’s de los contenedores y la interfaz de red del equipo host, esto se debe a que Docker crea una interfaz de red virtual tipo bridge (por ejemplo, br-xxxxxx), la cual conecta internamente a todos los contenedores asociados a una red personalizada. Dicha interfaz actúa como un switch virtual, permitiendo al host observar todo el tráfico que circula entre los contenedores, incluso si estos no exponen puertos al exterior. En contraste, un contenedor individual solo puede ver su propio tráfico:
+
+Podemos ver la interfaz personalizada con el siguiente comando:
+
+```bash
+ifconfig
+```
+> [!NOTE]
+> Identificar y anotar la interfaz **br-XXXXXX**
+
+### 1- Configuración
+Para la utilización de Scapy es necesario tener Python instalado en la maquina HOST. Vamos a preparar la máquina para la intercepción de tráfico, inyección y manipulación de paquetes. 
+
+Para instalar Python y Scapy se utiliza el siguiente comando:
+
+```bash
+$sudo apt update
+$sudo apt install -y python3 python3-pip tcpdump iputils-ping
+$sudo apt install -y python3-scapy
+```
+¿Por qué no será utilizado scapy en un contenedor individual?
+Porque al tener Scapy en un contenedor Docker solo ve su propio eth0. En Docker, el aislamiento de red está a nivel de interfaz, no solo IP. Esto limita la visibilidad del tráfico.
+
+> [!IMPORTANT]
+> Es estrictamente necesario tener los contenedores iniciados. Para iniciar un contenedor se utiliza el siguiente comando:
+> ```bash
+> $sudo docker start cliente
+> $sudo docker start servidor_v2
+>```
+
 
 
 
