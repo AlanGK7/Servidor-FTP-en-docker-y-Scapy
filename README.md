@@ -432,7 +432,7 @@ El servidor responde con RST cerrando abruptamente la conexión.
 > [!CAUTION]
 > Es posible que el servidor se caiga, si es así iniciar nuevamente con el comando **proftpd**
 
-Inyección 2: comando inventado
+Inyección 2: Comando inventado
 ```python
 send(IP(dst="ip_servidor")/TCP(sport=RandShort(), dport=21, flags="PA")/Raw(load="INVALIDCMD arg\r\n"))
 ```
