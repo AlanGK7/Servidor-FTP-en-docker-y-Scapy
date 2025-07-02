@@ -308,7 +308,7 @@ usuario y la contraseña correspondiente, con un ls o cd para verificar que se e
 > ```
 
 ## Comandos FTP importantes.
-El entorno se encuentra totalmente do. Para lo siguiente es importante saber los comandos que se pueden utilizar en la consola dentro del servidor. Entre los comandos FTP más comunes y representativos se encuentran:
+El entorno se encuentra está completamente configurado. Para lo siguiente es importante saber los comandos que se pueden utilizar en la consola dentro del servidor. Entre los comandos FTP más comunes y representativos se encuentran:
 - `USER`: Envía el nombre de usuario para iniciar sesión.
 - `PASS`: Transmite la contraseña del usuario.
 - `PUT`: Sube un archivo individualmente.
