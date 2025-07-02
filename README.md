@@ -181,7 +181,7 @@ RequireValidShell   off
 SystemLog           /var/log/proftpd.log
 ```
 > [!CAUTION]
-> Con el comando **RequireValidShell of** sirve para que usuarios con shells falsos puedan iniciar sesión con FTP.
+> Con el comando **RequireValidShell off** sirve para que usuarios con shells falsos puedan iniciar sesión con FTP.
 
 Con el servidor ya en funcionamiento, procedemos a añadir un usuario que se utilizará para iniciar sesión a
 través del servicio FTP. Este usuario se crea sin acceso a la terminal del sistema, utilizando el siguiente comando:
