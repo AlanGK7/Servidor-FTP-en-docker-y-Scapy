@@ -161,6 +161,8 @@ RequireValidShell   off
 # Log de actividad
 SystemLog           /var/log/proftpd.log
 ```
+> [!CAUTION]
+> Con el comando **RequireValidShell of** sirve para que usuarios con shells falsos puedan iniciar sesión con FTP.
 
 Con el servidor ya en funcionamiento, procedemos a añadir un usuario que se utilizará para iniciar sesión a
 través del servicio FTP. Este usuario se crea sin acceso a la terminal del sistema, utilizando el siguiente comando:
@@ -262,10 +264,47 @@ Volvemos a la terminal del servidor y combrobamos que se encuentre disponible pa
 ps aux | grep proftpd # debera salir un resultado como porftpd: (accepting connections)
 ```
 > [!IMPORTANT]
-> Si no se encuetra aceptando conexion ingrese el siguiente comando:
+> Si no se encuetra aceptando conexión ingrese el siguiente comando:
 > ```bash
 > proftpd
 > ``` 
+
+Para lo siguiente, es importante tener en cuenta que se ha creado un usuario con sus respectivas credenciales
+para establecer la conexión con el servidor. El usuario user, con la contraseña pass, está autorizado para conectarse mediante lftp. Desde la terminal del cliente, se debe iniciar la conexión con el servidor utilizando el siguiente comando:
+
+```bash
+lftp -u user,pass servidor
+```
+> [!CAUTION]
+> Cambiar user y pass según qué usuario fue ingresado previamente.
+
+Luego desde la terminal del cliente se realiza el siguiente comando para unirse como usuario desde lftp a el servidor con el
+usuario y la contraseña correspondiente, con un ls o cd para verificar que se encuentra en el servidor listo para bajar o subir archivos.
+> [!NOTE]
+> Para hacer pruebas se recomienda instalar nano para en enviar archivos txt.
+> ```bash
+> apt-get install nano
+> ```
+
+## Comandos FTP importantes.
+El entorno se encuentra totalmente configurado. Para lo siguiente es importante saber los comandos que se pueden utilizar en la consola dentro del servidor. Entre los comandos FTP más comunes y representativos se encuentran:
+- `USER`: Envía el nombre de usuario para iniciar sesión.
+- `PASS`: Transmite la contraseña del usuario.
+- `CWD`: Cambia el directorio de trabajo en el servidor.
+- `PWD`: Muestra el directorio actual en el servidor.
+- `LIST`: Lista el contenido de un directorio.
+- `RETR`: Descarga un archivo del servidor.
+- `STOR` o `PUT`: Sube un archivo desde el cliente al servidor.
+- `DELE`: Elimina un archivo en el servidor.
+- `MGET`: Descarga múltiples archivos simultáneamente.
+- `MPUT`: Sube múltiples archivos a la vez.
+- `MKD`: Crea un nuevo directorio.
+- `RMD`: Elimina un directorio.
+- `REN`: Renombra archivos.
+- `SYST`: Muestra información del sistema del servidor.
+- `FEAT`: Lista las funciones disponibles en el servidor.
+- `QUIT`: Finaliza la sesión FTP correctamente.
+
 
 
 
