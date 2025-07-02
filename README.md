@@ -12,11 +12,9 @@ abordaremos la del cliente y, finalmente, mostraremos cómo establecer la conexi
 Como parte del estudio del protocolo **FTP**, se utilizó **Scapy** para interceptar, modificar e inyectar tráfico entre el cliente (lftp) y el servidor (ProFTPD), ambos ejecutándose como contenedores **Docker**.
 El objetivo principal fue analizar el comportamiento del servicio FTP ante alteraciones en el protocolo.
 
-> ❗️**Important:**  
+> [!IMPORTANT]
 > Este proyecto ha sido diseñado y probado exclusivamente en sistemas operativos **Linux**, particularmente distribuciones basadas en **Ubuntu/Debian**.  
 > Algunos comandos, rutas y configuraciones pueden no funcionar correctamente en **Windows** o **macOS** sin adaptaciones adicionales.
-
-
 
 ## 📁 Estructura del Proyecto
 
