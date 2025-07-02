@@ -16,6 +16,27 @@ El objetivo principal fue analizar el comportamiento del servicio FTP ante alter
 > Este proyecto ha sido diseñado y probado exclusivamente en sistemas operativos **Linux**, particularmente distribuciones basadas en **Ubuntu/Debian**.  
 > Algunos comandos, rutas y configuraciones pueden no funcionar correctamente en **Windows** o **macOS** sin adaptaciones adicionales.
 
+
+
+## 📁 Estructura del Proyecto
+
+```plaintext
+┌──────────────┐         docker network: redes_net        ┌──────────────┐
+│   Cliente    │  <—————————— comunicación FTP ——————————>  │  Servidor    │
+│   (lftp)     │                                         │  (ProFTPD)   │
+└──────────────┘                                         └──────────────┘
+           ⬇                                                ⬇
+     Interfaz virtual                                Interfaz virtual
+         br-XXX                                           br-XXX   
+               ↘                                        ↙
+                   ┌────────────────────────────────┐
+                   │     Host (Scapy, Python)       │
+                   └────────────────────────────────┘
+
+
+```
+
+
 ## ⚙️ Instalación del servidor
 
 Para la instalación del servidor ProFTPD, se creó una red interna dentro del mismo dispositivo. Aunque este
