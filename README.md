@@ -1,4 +1,4 @@
-# Servidor-FTP-en-docker-y-Scapy
+# Servicios-FTP-en-docker-y-Scapy
 
 ## Descripción
 En conjunto, **lftp** y **ProFTPD** forman una pareja ideal para usuarios técnicos o administradores que buscan eficiencia, seguridad y automatización avanzada en sus sistemas. A diferencia de otras combinaciones, esta se enfoca
