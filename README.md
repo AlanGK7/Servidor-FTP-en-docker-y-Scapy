@@ -327,9 +327,9 @@ Para la utilización de Scapy es necesario tener Python instalado en la maquina 
 Para instalar Python y Scapy se utiliza el siguiente comando:
 
 ```bash
-$sudo apt update
-$sudo apt install -y python3 python3-pip tcpdump iputils-ping
-$sudo apt install -y python3-scapy
+sudo apt update
+sudo apt install -y python3 python3-pip tcpdump iputils-ping
+sudo apt install -y python3-scapy
 ```
 ¿Por qué no será utilizado scapy en un contenedor individual?
 Porque al tener Scapy en un contenedor Docker solo ve su propio eth0. En Docker, el aislamiento de red está a nivel de interfaz, no solo IP. Esto limita la visibilidad del tráfico.
@@ -337,9 +337,111 @@ Porque al tener Scapy en un contenedor Docker solo ve su propio eth0. En Docker,
 > [!IMPORTANT]
 > Es estrictamente necesario tener los contenedores iniciados. Para iniciar un contenedor se utiliza el siguiente comando:
 > ```bash
-> $sudo docker start cliente
-> $sudo docker start servidor_v2
+> sudo docker start cliente
+> sudo docker start servidor_v2
 >```
+
+Luego ingresamos a la terminal de los contenedores
+> [!NOTE]
+> Para ingresar a la terminal de un contenedor es:
+> ```bash
+> sudo docker exec -it nombre_contenedor /bin/bash
+>```
+
+### intercepción de tráfico con Scapy
+
+Para Poder utilizar Scapy hay múltiples formas, una de ellas es crear un Script en python para identificar paquetes en concreto, por ejemplo una un paquete con etiqueta **USER** y **PASS**. La otra forma de utilizarlo es enviando comandos directamente por la interfaz de Scapy.
+
+> [!IMPORTANT]
+> Ingresar el campo correspondiente en iface="" con la interfaz obtenida con ifconfig.
+
+> [!NOTE]
+> Utilizar directamente desde la interfaz de Scapy es:
+> ```bash
+> scapy
+> sniff(iface="br-XXXXXX", prn=lambda x: x.summary(), store=False)
+>```
+
+Vamos a utilizar un **script en Python** que filtra paquetes que contienen los comandos `USER` y `PASS`, permitiendo obtener las credenciales del cliente. Esto es posible debido a las **vulnerabilidades inherentes del protocolo FTP**, el cual transmite la información en **texto plano** sin ningún tipo de cifrado.
+
+Creamos un nuevo archivo con nano:
+```bash
+nano script.py
+```
+
+Al estar en el editor de texto ingresamos el siguiente Script:
+
+```python
+from scapy.all import sniff, TCP, Raw
+
+def print_pkt(pkt):
+    if pkt.haslayer(TCP) and pkt.haslayer(Raw):
+        data = pkt[Raw].load.decode(errors='ignore')
+        if "USER" in data:
+            print(f"[+] Usuario detectado: {data.strip()}")
+        elif "PASS" in data:
+            print(f"[+] Contraseña detectada: {data.strip()}")
+        elif pkt[TCP].sport == 21 or pkt[TCP].dport == 21:
+            print(f"[FTP] {data.strip()}")
+
+sniff(iface="br-XXXXX", filter="tcp port 21", prn=print_pkt, store=False)
+```
+Ejemplo de ejecución:
+```text
+[+] Usuario detectada USER usuario
+[+] Contraseña detectada PASS 1234
+[FTP] 230 User usuario logged in
+```
+> [!TIP]
+> Para poder ver este resultado en concreto, inicia sesión lftp desde el cliente con tu usuario y contraseña previamente añadida.
+
+Campos importantes:
+- `tcp port 21`: Permite visualizar paquetes TCP dirigidos desde el puerto 21 (FTP)
+- `Raw.load.decode`: permite visualizar comandos en texto claro como USER y PASS.
+- `br-XXXX`: Corresponde al puente Docker que conecta los contenedores.
+
+### Inyecciones de Tráfico (Técnicas de Fuzzing)
+Las pruebas fuzz o fuzzing son un método automatizado de pruebas de software que inyecta datos inválidos, malformados o inesperados en un sistema para revelar defectos y vulnerabilidades. Una herramienta de fuzzing inyecta estos datos en el sistema y luego monitorea excepciones como fallos o fugas de información.
+
+Primera inyección: Intento de inicio de sesión con una cadena USER muy grande
+```python
+send(IP(dst="ip_servidor")/TCP(sport=RandShort(), dport=21, flags="PA")/Raw(load="USER " + "A"*1000 + "\r\n"))
+```
+El servidor responde con RST cerrando abruptamente la conexión.
+> [!CAUTION]
+> Es posible que el servidor se caiga, si es así iniciar nuevamente con el comando **proftpd**
+
+Inyección 2: comando inventado
+```python
+send(IP(dst="ip_servidor")/TCP(sport=RandShort(), dport=21, flags="PA")/Raw(load="INVALIDCMD arg\r\n"))
+```
+El servidor responde con un RST cerrando abruptamente la conexión. **INVALIDCMD** simula un comando no válido del protocol, respuesta 500, mensaje "comando no reconocido"
+
+### Modificaciones del tráfico
+
+Primera modificación: Solo SYN (handshake falso)
+```python
+send(IP(dst="ip_servidor")/TCP(sport=RandShort(), dport=21, flags="S")) 
+```
+El servidor responde con un paquete SYN, ACK, indicando que estaba dispuesto a aceptar la conexión. Sin embargo, al no completar el handshake, el cliente respondió con un RST, terminando abruptamente la conexión.
+
+Segunda modificación: Comando PASS fuera de contexto
+```python
+send(IP(dst="ip_servidor") / TCP(sport=RandShort(), dport=21, flags="PA", seq=1) / Raw(load="PASS xyz\r\n"))
+```
+Simula el envío de una contraseña (PASS xyz), sin haber hecho antes un USER o sin conexión válida, el servidor FTP lo interpreta como tráfico inválido o inesperado. Como resultado, el servidor responde con un RST
+
+Tercera modificación: Comando PASS fuera de contexto
+```python
+send(IP(dst="ip_servidor")/TCP(sport=RandShort(), dport=21, flags="PA")/Raw(load="USER root\r\n"))
+```
+Muchos servidores FTP bloquean el login como root o bien este paquete es enviado sin una sesión válida ni handshake previo, por lo que el servidor responde con un paquete RST.
+
+## Conclusión
+En este proyecto se enseña a instalar el servicio de ProFTPD y LFTP en contenedores, y se explica cómo son las interacciones entre Cliente-Servidor. También se enseña cómo utilizar Scapy, demostrando que puede ser una herramienta poderosa para la inspección, inyección y modificación de tráfico en servicios de red como FTP. Se replicó un entorno controlado y reproducible para estudiar los efectos del tráfico manipulado. Se simula cómo el servidor FTP reacciona ante entradas malformadas, comandos inesperados y sesiones TCP anómalas.
+
+
+
 
 
 
